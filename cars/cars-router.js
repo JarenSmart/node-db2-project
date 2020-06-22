@@ -36,4 +36,36 @@ router.post("/", async (req, res, next) => {
   }
 });
 
+router.put("/:id", async (req, res, next) => {
+  try {
+    const payload = {
+      // the database will auto generate ID
+      vin: req.body.vin,
+      make: req.body.make,
+      model: req.body.model,
+      mileage: req.body.mileage,
+      transmissionType: req.body.transmissionType,
+      titleStatus: req.body.titleStatus,
+    };
+
+    await db("cars").update(payload).where("id", req.params.id);
+    const updateCar = await db
+      .first("*")
+      .from("cars")
+      .where("id", req.params.id);
+    res.json(updateCar);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete("/:id", async (req, res, next) => {
+  try {
+    await db("cars").where("id", req.params.id).del();
+    res.status(204).end();
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
